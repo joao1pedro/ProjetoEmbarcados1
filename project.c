@@ -69,8 +69,10 @@
 /*****************************************************************************
 **                INTERNAL FUNCTION PROTOTYPES
 *****************************************************************************/
-//static void delay();
 static void initGame(void);
+static void seqL(void);
+static void seqR(void);
+static void gameOver(void);
 static void startLeds(void);
 static void moveDireita(void);
 static void moveEsquerda(void);
@@ -87,6 +89,7 @@ static void DMTimerSetUp(void);
 static void Delay(volatile unsigned int);
 static volatile unsigned int flagIsr;
 volatile unsigned int mSec = 1000;
+char nome[25];
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
@@ -195,7 +198,6 @@ static void setupInterruptButton(){
  }
 
 static void initGame(){
-    char nome[25];
     ConsoleUtilsPrintf("\n\r##############################\n\r");
     ConsoleUtilsPrintf("\r##### TRAFFIC BLOCK GAME  #####\n\r");
     ConsoleUtilsPrintf("\r##############################\n\r");
@@ -204,30 +206,6 @@ static void initGame(){
     startLeds();
 }
 
-/*
-static void seqFaixas(){
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, HIGH);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, LOW);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, HIGH);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_13, HIGH);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_15, LOW);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_28, HIGH);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_29, LOW);
-    Delay(500);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_30, HIGH);
-    Delay(500);
-}
-*/
 static void moveEsquerda(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH); //1 a esquerda
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW); // 0 a direita
@@ -248,12 +226,52 @@ static void startLeds(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
-    Delay(1000);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW);
+    Delay(1);
     //chama função p/acender aleatoriamente
 }
 
+static void seqL(){
+    /* sequencia a esquerda */
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, HIGH);
+    Delay(1);
+    if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_12)) //batida
+        gameOver();
+}
+
+static void seqR(){
+    /* sequencia a direita*/
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, HIGH);
+    Delay(1);
+    if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_14)) //batida
+        gameOver();
+}
+
+static void gameOver(void){
+    ConsoleUtilsPrintf("\n\r##############################\n\r");
+    ConsoleUtilsPrintf("\r##### SCORE  #####\n\r");
+    ConsoleUtilsPrintf("\r##############################\n\r");
+    ConsoleUtilsPrintf("Jogador: %s", nome);
+    Delay(10);
+    initGame();
+}
 /*FUNCTION*-------------------------------------------------------
 *
 * Function Name : gpioAintcconfigure
