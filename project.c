@@ -243,25 +243,33 @@ static void seqL(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, HIGH);
     Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, LOW);
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_12)) //batida
         gameOver();
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW);
 }
 
 static void seqR(){
     /* sequencia a direita*/
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, HIGH);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, HIGH);
     Delay(1);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, HIGH);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, HIGH);
     Delay(1);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, HIGH);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, HIGH);
     Delay(1);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, HIGH);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, HIGH);
     Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_14)) //batida
         gameOver();
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, HIGH);
+    Delay(1);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW);
 }
 
 static void gameOver(void){
