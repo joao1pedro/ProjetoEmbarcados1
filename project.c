@@ -70,6 +70,7 @@
 **                INTERNAL FUNCTION PROTOTYPES
 *****************************************************************************/
 static void initGame(void);
+static void carrosBlink(void);
 static void seqL(void);
 static void seqR(void);
 static void gameOver(void);
@@ -90,6 +91,7 @@ static void Delay(volatile unsigned int);
 static volatile unsigned int flagIsr;
 volatile unsigned int mSec = 1000;
 char nome[25];
+unsigned int score = 0;
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
@@ -196,8 +198,8 @@ static void setupInterruptButton(){
     // selecti the console type based on compile time check
     ConsoleUtilsSetType(CONSOLE_UART);
  }
-
 static void initGame(){
+    score = 0;
     ConsoleUtilsPrintf("\n\r##############################\n\r");
     ConsoleUtilsPrintf("\r##### TRAFFIC BLOCK GAME  #####\n\r");
     ConsoleUtilsPrintf("\r##############################\n\r");
@@ -205,13 +207,11 @@ static void initGame(){
     ConsoleUtilsScanf("%s", nome);
     startLeds();
 }
-
 static void moveEsquerda(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH); //1 a esquerda
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW); // 0 a direita
     ConsoleUtilsPrintf("Moveu pra esquerda \n");
 }
-
 static void  moveDireita(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW); //0 a esqueda
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, HIGH); //1 a direita
@@ -228,8 +228,8 @@ static void startLeds(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
     Delay(1);
     //chama função p/acender aleatoriamente
+    carrosBlink();
 }
-
 static void seqL(){
     /* sequencia a esquerda */
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, HIGH);
@@ -247,10 +247,10 @@ static void seqL(){
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_12)) //batida
         gameOver();
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH);
+    score++;
     Delay(1);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW);
 }
-
 static void seqR(){
     /* sequencia a direita*/
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, HIGH);
@@ -268,17 +268,30 @@ static void seqR(){
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_14)) //batida
         gameOver();
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, HIGH);
+    score++;
     Delay(1);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW);
 }
-
 static void gameOver(void){
     ConsoleUtilsPrintf("\n\r##############################\n\r");
-    ConsoleUtilsPrintf("\r##### SCORE  #####\n\r");
+    ConsoleUtilsPrintf("\r##### GAME OVER  #####\n\r");
     ConsoleUtilsPrintf("\r##############################\n\r");
-    ConsoleUtilsPrintf("Jogador: %s", nome);
+    ConsoleUtilsPrintf("\nJogador: %s", nome);
+    ConsoleUtilsPrintf("\nScore: %d", score);
     Delay(10);
     initGame();
+}
+static void carrosBlink(void){
+    seqL();
+    Delay(2);
+    seqR();
+    Delay(1);
+    seqL();
+    Delay(1);
+    seqR();
+    Delay(1);
+    seqL();
+    Delay(0.5);
 }
 /*FUNCTION*-------------------------------------------------------
 *
