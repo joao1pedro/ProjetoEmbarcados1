@@ -78,7 +78,7 @@ static void gpioIntTypeSet(unsigned int, unsigned int, unsigned int);
 static void DMTimerSetUp(void);
 static void Delay(volatile unsigned int);
 static volatile unsigned int flagIsr;
-volatile unsigned int mSec = 1000;
+//volatile unsigned int mSec = 1000;
 char nome[25];
 unsigned int score = 0;
 /* 
@@ -221,7 +221,7 @@ static void startLeds(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
-    Delay(1); //1 segundo para começar a acender os leds
+    Delay(1000); //1 segundo para começar a acender os leds
     //chama função p/acender aleatoriamente
     carrosBlink();
 }
@@ -230,22 +230,22 @@ static void startLeds(){
 static void seqL(){
     /* sequencia a esquerda */
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, LOW);
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_12)) //batida
         gameOver();
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH);
     score++;
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW);
 }
 /* Faz os carros da faixa a direita irem em direção
@@ -253,22 +253,22 @@ static void seqL(){
 static void seqR(){
     /* sequencia a direita*/
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, HIGH);
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_14)) //batida
         gameOver();
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, HIGH);
     score++;
-    Delay(1);
+    Delay(1000);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW);
 }
 /* Mostrar placar do jogador e reinicia o jogo após 10 segundos
@@ -279,22 +279,125 @@ static void gameOver(void){
     ConsoleUtilsPrintf("\r##############################\n\r");
     ConsoleUtilsPrintf("\nJogador: %s", nome);
     ConsoleUtilsPrintf("\nScore: %d", score);
-    Delay(10);
+    Delay(10000);
     initGame();
 }
 /* Faz um padrão de leds acenderem nas faixas
  * para ir em direção ao jogador */
 static void carrosBlink(void){
-    seqL();
-    Delay(2);
-    seqR();
-    Delay(1);
-    seqL();
-    Delay(1);
-    seqR();
-    Delay(1);
-    seqL();
-    Delay(0.5);
+    int sequencia = 0;
+    if(sequencia == 0){
+        seqL();
+        Delay(2000);
+        seqR();
+        Delay(1000);
+        seqL();
+        Delay(1000);
+        seqR();
+        Delay(1000);
+        seqL();
+        Delay(500);
+        sequencia++;
+    }
+    else if(sequencia == 1){
+        seqL();
+        Delay(1000);
+        seqL();
+        Delay(1000);
+        seqR();
+        Delay(2000);
+        seqL();
+        Delay(500);
+        sequencia++;
+    }
+    else if(sequencia == 2){
+        seqR();
+        Delay(1000);
+        seqL();
+        Delay(2000);
+        seqL();
+        Delay(500);
+        seqR();
+        Delay(700);
+        sequencia++;
+    }
+    else if(sequencia == 3){
+        seqL();
+        Delay(1000);
+        seqL();
+        Delay(500);
+        seqR();
+        Delay(1500);
+        seqL();
+        Delay(800);
+        sequencia++;
+    }
+    else if(sequencia == 4){
+        seqR();
+        Delay(2000);
+        seqL();
+        Delay(700);
+        seqL();
+        Delay(200);
+        seqR();
+        Delay(1000);
+        sequencia++;
+    }
+    else if(sequencia == 5){
+        seqL();
+        Delay(800);
+        seqL();
+        Delay(300);
+        seqR();
+        Delay(900);
+        seqR();
+        Delay(1000);
+        sequencia++;
+    }
+    else if(sequencia == 6){
+        seqL();
+        Delay(850);
+        seqR();
+        Delay(300);
+        seqR();
+        Delay(250);
+        seqR();
+        Delay(500);
+        sequencia++;
+    }
+    else if(sequencia == 7){
+        seqL();
+        Delay(850);
+        seqR();
+        Delay(300);
+        seqR();
+        Delay(250);
+        seqR();
+        Delay(500);
+        sequencia++;
+    }
+    else if(sequencia == 8){
+        seqL();
+        Delay(600);
+        seqL();
+        Delay(300);
+        seqR();
+        Delay(900);
+        seqL();
+        Delay(800);
+        sequencia++;
+    }
+    else{
+        seqR();
+        Delay(800);
+        seqR();
+        Delay(1000);
+        seqL();
+        Delay(1000);
+        seqR();
+        Delay(1000);
+        sequencia = 1;
+    }
 }
 /*FUNCTION*-------------------------------------------------------
 *
@@ -564,13 +667,12 @@ static void DMTimerSetUp(void){
     DMTimerReset(SOC_DMTIMER_2_REGS);
     DMTimerModeConfigure(SOC_DMTIMER_2_REGS, DMTIMER_AUTORLD_NOCMP_ENABLE);
 }
-static void Delay(volatile unsigned int timer){
-   timer *= mSec;
-   while(timer != 0){
+static void Delay(volatile unsigned int mSec){
+   while(mSec != 0){
         DMTimerCounterSet(SOC_DMTIMER_2_REGS, 0);
         DMTimerEnable(SOC_DMTIMER_2_REGS);
         while(DMTimerCounterGet(SOC_DMTIMER_2_REGS) < TIMER_1MS_COUNT);
         DMTimerDisable(SOC_DMTIMER_2_REGS);
-        timer--;
+        mSec--;
     }
 }
