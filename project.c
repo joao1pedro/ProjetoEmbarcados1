@@ -49,11 +49,11 @@
 #define GPIO_INTC_TYPE_FALL_EDGE                                (0x20)
 #define GPIO_INTC_TYPE_BOTH_EDGE                                (0x30)
 
-#define TIMER_INITIAL_COUNT             (0xFF000000u)
-#define TIMER_RLD_COUNT                 (0xFF000000u)
-#define T_1MS_COUNT                     (0x5DC0u) 
-#define OVERFLOW                        (0xFFFFFFFFu)
-#define TIMER_1MS_COUNT                 (0x5DC0u) 
+#define TIMER_INITIAL_COUNT                                     (0xFF000000u)
+#define TIMER_RLD_COUNT                                         (0xFF000000u)
+#define T_1MS_COUNT                                             (0x5DC0u) 
+#define OVERFLOW                                                (0xFFFFFFFFu)
+#define TIMER_1MS_COUNT                                         (0x5DC0u) 
 
 /*****************************************************************************
 **                INTERNAL FUNCTION PROTOTYPES
