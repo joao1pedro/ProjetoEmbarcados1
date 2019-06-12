@@ -27,16 +27,6 @@
 #define PINO1_16                                                16
 #define PINO1_17                                                17
 
-/*
-#define PINO1_21											    21
-#define PINO1_22												22
-#define PINO1_23												23
-#define PINO1_24												24
-*/
-
-/*PINO DE GPIO MODULO 2 ESCOLHIDO -> GPIO2_1 */
-#define PINO2_1													1
-
 /* Values denoting the Interrupt Line number to be used. */
 #define GPIO_INTC_LINE_1                                        (0x0)
 #define GPIO_INTC_LINE_2                                        (0x1)
@@ -64,7 +54,6 @@
 #define T_1MS_COUNT                     (0x5DC0u) 
 #define OVERFLOW                        (0xFFFFFFFFu)
 #define TIMER_1MS_COUNT                 (0x5DC0u) 
-
 
 /*****************************************************************************
 **                INTERNAL FUNCTION PROTOTYPES
@@ -113,10 +102,12 @@ int main(void){
     /* Enable GPIO2 CLOCK */
     //GPIOModuleClkConfig(GPIO2);
 
+    //faixa esquerda
     initLed(SOC_GPIO_1_REGS, 1, PINO1_0);
     initLed(SOC_GPIO_1_REGS, 1, PINO1_1);
     initLed(SOC_GPIO_1_REGS, 1, PINO1_2);
     initLed(SOC_GPIO_1_REGS, 1, PINO1_3);
+    //faixa direita
     initLed(SOC_GPIO_1_REGS, 1, PINO1_4);
     initLed(SOC_GPIO_1_REGS, 1, PINO1_5);
     initLed(SOC_GPIO_1_REGS, 1, PINO1_6);
@@ -198,6 +189,7 @@ static void setupInterruptButton(){
     // selecti the console type based on compile time check
     ConsoleUtilsSetType(CONSOLE_UART);
  }
+/* inicia a partida */
 static void initGame(){
     score = 0;
     ConsoleUtilsPrintf("\n\r##############################\n\r");
@@ -207,16 +199,19 @@ static void initGame(){
     ConsoleUtilsScanf("%s", nome);
     startLeds();
 }
+/* Move o carro(led que o jogador controla) p/ a esquerda */
 static void moveEsquerda(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH); //1 a esquerda
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW); // 0 a direita
     ConsoleUtilsPrintf("Moveu pra esquerda \n");
 }
+/* Move o carro(led que o jogador controla) p/ a direita */
 static void  moveDireita(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW); //0 a esqueda
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, HIGH); //1 a direita
     ConsoleUtilsPrintf("Moveu pra direita \n");
 }
+/* Inicia os leds */
 static void startLeds(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
@@ -226,10 +221,12 @@ static void startLeds(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
-    Delay(1);
+    Delay(1); //1 segundo para começar a acender os leds
     //chama função p/acender aleatoriamente
     carrosBlink();
 }
+/* Faz carros da faixa a esquerda irem em direção
+ * ao carro do jogador */
 static void seqL(){
     /* sequencia a esquerda */
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, HIGH);
@@ -251,6 +248,8 @@ static void seqL(){
     Delay(1);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW);
 }
+/* Faz os carros da faixa a direita irem em direção
+ * ao carro do jogador */
 static void seqR(){
     /* sequencia a direita*/
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, HIGH);
@@ -272,6 +271,8 @@ static void seqR(){
     Delay(1);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW);
 }
+/* Mostrar placar do jogador e reinicia o jogo após 10 segundos
+ */
 static void gameOver(void){
     ConsoleUtilsPrintf("\n\r##############################\n\r");
     ConsoleUtilsPrintf("\r##### GAME OVER  #####\n\r");
@@ -281,6 +282,8 @@ static void gameOver(void){
     Delay(10);
     initGame();
 }
+/* Faz um padrão de leds acenderem nas faixas
+ * para ir em direção ao jogador */
 static void carrosBlink(void){
     seqL();
     Delay(2);
@@ -322,9 +325,9 @@ static void gpioAintcConf(void){
 *END*-----------------------------------------------------------*/    
 static void gpioIsr(void){
 	//flagIsr = 1;
-    if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_16)){
+    if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_16))
         moveEsquerda();
-    }else if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_17))
+    else if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_17))
         moveDireita();
     /*	Clear wake interrupt	*/
 	//HWREG(SOC_GPIO_1_REGS + 0x3C) = 0x1000;
