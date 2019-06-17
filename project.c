@@ -60,8 +60,8 @@
 *****************************************************************************/
 static void initGame(void);
 static void carrosBlink(void);
-static void seqL(void);
-static void seqR(void);
+static void seqL(unsigned int);
+static void seqR(unsigned int);
 static void gameOver(void);
 static void startLeds(void);
 static void moveDireita(void);
@@ -77,8 +77,9 @@ static void gpioPinIntEnable(unsigned int, unsigned int, unsigned int);
 static void gpioIntTypeSet(unsigned int, unsigned int, unsigned int);
 static void DMTimerSetUp(void);
 static void Delay(volatile unsigned int);
-static volatile unsigned int flagIsr;
+//static volatile unsigned int flagIsr;
 //volatile unsigned int mSec = 1000;
+unsigned int tempo;
 char nome[25];
 unsigned int score = 0;
 /* 
@@ -88,7 +89,7 @@ unsigned int score = 0;
  * =====================================================================================
  */
 int main(void){
-	flagIsr = 0;
+	//flagIsr = 0;
     
     /* Enable DMTimer clk */
     DMTimer2ModuleClkConfig();
@@ -99,8 +100,6 @@ int main(void){
   	
     /* Enable GPIO1 CLOCK */
     GPIOModuleClkConfig(GPIO1);
-    /* Enable GPIO2 CLOCK */
-    //GPIOModuleClkConfig(GPIO2);
 
     //faixa esquerda
     initLed(SOC_GPIO_1_REGS, 1, PINO1_0);
@@ -123,7 +122,7 @@ int main(void){
         
     // ENABLE PIN TO INTERRUPT   	
 	gpioAintcConf();
-    
+    setupInterruptButton();//configura interrupcoes para pinos
     /* Perform the necessary configurations for DMTimer */
     DMTimerSetUp();
 
@@ -135,15 +134,8 @@ int main(void){
 
     initGame();
 
-    setupInterruptButton();
     
-    /*
-    while(flagIsr){
-        flag = 0;
-        initGame();
-    }
-    */
-	return(0);
+    return(0);
 } /* ----------  end of function main  ---------- */
 
 /*FUNCTION*-------------------------------------------------------
@@ -203,199 +195,211 @@ static void initGame(){
 static void moveEsquerda(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH); //1 a esquerda
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW); // 0 a direita
-    ConsoleUtilsPrintf("Moveu pra esquerda \n");
+    //ConsoleUtilsPrintf("Moveu pra esquerda \n");
 }
 /* Move o carro(led que o jogador controla) p/ a direita */
 static void  moveDireita(){
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW); //0 a esqueda
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, HIGH); //1 a direita
-    ConsoleUtilsPrintf("Moveu pra direita \n");
+    //ConsoleUtilsPrintf("Moveu pra direita \n");
 }
 /* Inicia os leds */
 static void startLeds(){
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, LOW);
-    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH);
+    ConsoleUtilsPrintf("Inicializando Game ...\n");
     Delay(1000); //1 segundo para começar a acender os leds
     //chama função p/acender aleatoriamente
     carrosBlink();
 }
 /* Faz carros da faixa a esquerda irem em direção
  * ao carro do jogador */
-static void seqL(){
+static void seqL(unsigned int tempo){
     /* sequencia a esquerda */
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_0, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_1, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_2, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_3, LOW);
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_12)) //batida
         gameOver();
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, HIGH);
     score++;
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW);
 }
 /* Faz os carros da faixa a direita irem em direção
  * ao carro do jogador */
-static void seqR(){
+static void seqR(unsigned int tempo){
     /* sequencia a direita*/
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_4, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_5, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_6, LOW);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, HIGH);
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_7, LOW);
     if(GPIOPinRead(SOC_GPIO_1_REGS, PINO1_14)) //batida
         gameOver();
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, HIGH);
     score++;
-    Delay(1000);
+    Delay(tempo);
     GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW);
 }
 /* Mostrar placar do jogador e reinicia o jogo após 10 segundos
  */
 static void gameOver(void){
+    unsigned int mSec = 1000;
+    int cntValue = 5;
     ConsoleUtilsPrintf("\n\r##############################\n\r");
     ConsoleUtilsPrintf("\r##### GAME OVER  #####\n\r");
     ConsoleUtilsPrintf("\r##############################\n\r");
     ConsoleUtilsPrintf("\nJogador: %s", nome);
     ConsoleUtilsPrintf("\nScore: %d", score);
-    Delay(10000);
-    initGame();
+    
+    /* Start the DMTimer */
+    DMTimerEnable(SOC_DMTIMER_2_REGS);  
+
+    ConsoleUtilsPrintf("\nO jogo sera reiniciado em %d segundos", (cntValue));
+    while(cntValue)
+    {
+        ConsoleUtilsPrintf("\n#### %d ####", (cntValue - 1));
+        Delay(mSec);
+        cntValue--;
+    }
+
+    /* Stop the DMTimer */
+    DMTimerDisable(SOC_DMTIMER_2_REGS); 
+    //Delay(10000);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_12, LOW);
+    GPIOPinWrite(SOC_GPIO_1_REGS, PINO1_14, LOW);
+    initGame(); //reiniciar jogo
 }
 /* Faz um padrão de leds acenderem nas faixas
  * para ir em direção ao jogador */
 static void carrosBlink(void){
     int sequencia = 0;
     if(sequencia == 0){
-        seqL();
-        Delay(2000);
-        seqR();
-        Delay(1000);
-        seqL();
-        Delay(1000);
-        seqR();
-        Delay(1000);
-        seqL();
-        Delay(500);
+        tempo = 200;
+        seqL(tempo);
+        tempo = 300;
+        seqR(tempo);
+        tempo = 300;
+        seqL(tempo);
+        tempo = 80;
+        seqR(tempo);
+        tempo = 90;
+        seqL(tempo);
+        tempo = 100;
         sequencia++;
     }
-    else if(sequencia == 1){
-        seqL();
-        Delay(1000);
-        seqL();
-        Delay(1000);
-        seqR();
-        Delay(2000);
-        seqL();
-        Delay(500);
+    if(sequencia == 1){
+        seqL(tempo);
+        tempo = 230;
+        seqL(tempo);
+        tempo = 200;
+        seqR(tempo);
+        tempo = 100;
+        seqL(tempo);
+        tempo = 200;
         sequencia++;
     }
-    else if(sequencia == 2){
-        seqR();
-        Delay(1000);
-        seqL();
-        Delay(2000);
-        seqL();
-        Delay(500);
-        seqR();
-        Delay(700);
+    if(sequencia == 2){
+        seqR(tempo);
+        tempo = 200;
+        seqL(tempo);
+        tempo = 80;
+        seqL(tempo);
+        tempo = 100;
+        seqR(tempo);
+        tempo = 200;
         sequencia++;
     }
-    else if(sequencia == 3){
-        seqL();
-        Delay(1000);
-        seqL();
-        Delay(500);
-        seqR();
-        Delay(1500);
-        seqL();
-        Delay(800);
+    if(sequencia == 3){
+        seqL(tempo);
+        tempo = 200;
+        seqL(tempo);
+        tempo = 300;
+        seqR(tempo);
+        tempo = 150;
+        seqL(tempo);
+        tempo = 180;
         sequencia++;
     }
-    else if(sequencia == 4){
-        seqR();
-        Delay(2000);
-        seqL();
-        Delay(700);
-        seqL();
-        Delay(200);
-        seqR();
-        Delay(1000);
+    if(sequencia == 4){
+        seqR(tempo);
+        tempo = 100;
+        seqL(tempo);
+        tempo = 80;
+        seqL(tempo);
+        tempo = 80;
+        seqR(tempo);
+        tempo = 90;
         sequencia++;
     }
-    else if(sequencia == 5){
-        seqL();
-        Delay(800);
-        seqL();
-        Delay(300);
-        seqR();
-        Delay(900);
-        seqR();
-        Delay(1000);
+    if(sequencia == 5){
+        seqL(tempo);
+        tempo = 100;
+        seqL(tempo);
+        tempo = 95;
+        seqR(tempo);
+        tempo = 80;
+        seqR(tempo);
+        tempo = 150;
         sequencia++;
     }
-    else if(sequencia == 6){
-        seqL();
-        Delay(850);
-        seqR();
-        Delay(300);
-        seqR();
-        Delay(250);
-        seqR();
-        Delay(500);
+    if(sequencia == 6){
+        seqL(tempo);
+        tempo = 200;
+        seqR(tempo);
+        tempo = 300;
+        seqR(tempo);
+        tempo = 200;
+        seqR(tempo);
+        tempo = 100;
         sequencia++;
     }
-    else if(sequencia == 7){
-        seqL();
-        Delay(850);
-        seqR();
-        Delay(300);
-        seqR();
-        Delay(250);
-        seqR();
-        Delay(500);
+    if(sequencia == 7){
+        seqL(tempo);
+        tempo = 150;
+        seqR(tempo);
+        tempo = 200;
+        seqR(tempo);
+        tempo = 100;
+        seqR(tempo);
+        tempo = 150;
         sequencia++;
     }
-    else if(sequencia == 8){
-        seqL();
-        Delay(600);
-        seqL();
-        Delay(300);
-        seqR();
-        Delay(900);
-        seqL();
-        Delay(800);
+    if(sequencia == 8){
+        seqL(tempo);
+        tempo = 200;
+        seqL(tempo);
+        tempo = 180;
+        seqR(tempo);
+        tempo = 80;
+        seqL(tempo);
+        tempo = 100;
         sequencia++;
     }
-    else{
-        seqR();
-        Delay(800);
-        seqR();
-        Delay(1000);
-        seqL();
-        Delay(1000);
-        seqR();
-        Delay(1000);
+    if(sequencia == 9){
+        seqR(tempo);
+        tempo = 200;
+        seqR(tempo);
+        tempo = 100;
+        seqL(tempo);
+        tempo = 150;
+        seqR(tempo);
         sequencia = 1;
     }
 }
@@ -436,7 +440,6 @@ static void gpioIsr(void){
 	//HWREG(SOC_GPIO_1_REGS + 0x3C) = 0x1000;
 	//HWREG(SOC_GPIO_1_REGS + 0x34) = 0x1000;
 	//ConsoleUtilsPrintf("\nAPERTOU\n");
-	//HWREG(SOC_GPIO_1_REGS + 0x2C) = 0x10000;
 	HWREG(SOC_GPIO_1_REGS + 0x2C) = 0xFFFFFFFF;
 }
 
