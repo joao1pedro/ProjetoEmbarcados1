@@ -82,6 +82,7 @@ static void Delay(volatile unsigned int);
 unsigned int tempo;
 char nome[25];
 unsigned int score = 0;
+//unsigned int topScore = 0;
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
@@ -126,14 +127,7 @@ int main(void){
     /* Perform the necessary configurations for DMTimer */
     DMTimerSetUp();
 
-    /* Register DMTimer2 interrupts on to AINTC */
-    //DMTimerAintcConfigure();
-
-    /* Enable the DMTimer interrupts */
-    //DMTimerIntEnable(SOC_DMTIMER_2_REGS, DMTIMER_INT_OVF_EN_FLAG);
-
     initGame();
-
     
     return(0);
 } /* ----------  end of function main  ---------- */
@@ -268,6 +262,14 @@ static void gameOver(void){
     ConsoleUtilsPrintf("\nJogador: %s", nome);
     ConsoleUtilsPrintf("\nScore: %d", score);
     
+    /*
+    ConsoleUtilsPrintf("\r##############################\n\r");
+    ConsoleUtilsPrintf("\n#### Record de pontos: %d", score);
+    ConsoleUtilsPrintf("\r##############################\n\r");
+    if(score > topScore)
+        topScore = score;
+    */
+
     /* Start the DMTimer */
     DMTimerEnable(SOC_DMTIMER_2_REGS);  
 
@@ -293,9 +295,9 @@ static void carrosBlink(void){
     if(sequencia == 0){
         tempo = 200;
         seqL(tempo);
-        tempo = 300;
+        tempo = 250;
         seqR(tempo);
-        tempo = 300;
+        tempo = 250;
         seqL(tempo);
         tempo = 80;
         seqR(tempo);
@@ -308,29 +310,29 @@ static void carrosBlink(void){
         seqL(tempo);
         tempo = 230;
         seqL(tempo);
-        tempo = 200;
+        tempo = 90;
         seqR(tempo);
         tempo = 100;
         seqL(tempo);
-        tempo = 200;
+        tempo = 170;
         sequencia++;
     }
     if(sequencia == 2){
         seqR(tempo);
-        tempo = 200;
+        tempo = 100;
         seqL(tempo);
         tempo = 80;
         seqL(tempo);
         tempo = 100;
         seqR(tempo);
-        tempo = 200;
+        tempo = 170;
         sequencia++;
     }
     if(sequencia == 3){
         seqL(tempo);
-        tempo = 200;
+        tempo = 100;
         seqL(tempo);
-        tempo = 300;
+        tempo = 200;
         seqR(tempo);
         tempo = 150;
         seqL(tempo);
@@ -361,11 +363,11 @@ static void carrosBlink(void){
     }
     if(sequencia == 6){
         seqL(tempo);
-        tempo = 200;
+        tempo = 100;
         seqR(tempo);
-        tempo = 300;
+        tempo = 120;
         seqR(tempo);
-        tempo = 200;
+        tempo = 180;
         seqR(tempo);
         tempo = 100;
         sequencia++;
@@ -383,22 +385,22 @@ static void carrosBlink(void){
     }
     if(sequencia == 8){
         seqL(tempo);
-        tempo = 200;
+        tempo = 90;
         seqL(tempo);
-        tempo = 180;
+        tempo = 100;
         seqR(tempo);
         tempo = 80;
         seqL(tempo);
-        tempo = 100;
+        tempo = 110;
         sequencia++;
     }
     if(sequencia == 9){
         seqR(tempo);
-        tempo = 200;
+        tempo = 80;
         seqR(tempo);
-        tempo = 100;
+        tempo = 70;
         seqL(tempo);
-        tempo = 150;
+        tempo = 90;
         seqR(tempo);
         sequencia = 1;
     }
